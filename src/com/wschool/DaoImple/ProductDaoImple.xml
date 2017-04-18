@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.ProductDao">
+	 <resultMap type="Product" id="ProductRs">
+         <result property="id" column="id"/>
+         <result property="name" column="name"/>
+         <result property="code" column="code"/>
+         <result property="number" column="number"/>
+         <result property="type" column="type"/>
+         <result property="sales" column="sales"/>
+           <result property="price" column="price"/>
+           <association property="imagec" column="image" select="com.wschool.Dao.PictrueDao.findbyid"></association>
+	</resultMap>
+    
+	<insert id="add" parameterType="Product"  useGeneratedKeys="true" keyProperty="id">
+	    insert into product (name,code,number,type,price,classesid,image,sales) values (#{name},#{code},#{number},#{type},#{price},#{classesid},#{image},#{sales})
+	</insert>
+	
+	<select id="findbyclassid" parameterType="Integer" resultMap="ProductRs">
+	    select * from product where classesid=#{classid} order by sales desc
+	</select> 
+	
+	<delete id="deletebyid" parameterType="int">
+	    delete from product where id=#{id}
+	</delete>
+	
+		<select id="findbyid" parameterType="Integer" resultMap="ProductRs">
+	    select * from product where id=#{id}
+	</select> 
+	
+		<update id="sale" parameterType="int">
+		     update product set sales =sales+1
+		     where id =#{id}
+		</update>
+	
+		<update id="update" parameterType="Product" >
+		    update product
+		    <trim prefix="set" suffixOverrides=",">
+		        <if test="name!=null">
+		            name=#{name},
+		        </if>
+		        <if test="number!=null">
+		            number=#{number},
+		        </if>
+		        <if test="type!=null">
+		            type=#{type},
+		        </if>
+		        <if test="image!=null">
+		            image=#{image},
+		        </if>
+		        <if test="code!=null">
+		            code=#{code},
+		        </if>
+		        <if test="price!=null">
+		            price=#{price},
+		        </if>
+		          <if test="sales!=null">
+		            sales=#{sales},
+		        </if>
+		    </trim>
+		    where id=#{id}
+		</update>
+
+</mapper> 

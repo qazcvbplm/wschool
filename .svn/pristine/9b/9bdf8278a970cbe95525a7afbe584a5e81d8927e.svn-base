@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.OProductDao">
+	 <resultMap type="OProduct" id="OProductRs">
+         <result property="id" column="id"/>
+         <result property="orderid" column="orderid"/>
+          <result property="productid" column="productid"/>
+           <result property="count" column="count"/>
+            <result property="total" column="total"/>
+            <association property="product" column="productid" select="com.wschool.Dao.ProductDao.findbyid"></association>
+	</resultMap>
+    
+	<insert id="add" useGeneratedKeys="true"  parameterType="OProduct" keyProperty="id" >
+		insert into oproduct (orderid,productid,count,total) values(#{orderid},#{productid},#{count},#{total})
+	</insert>
+
+	
+	<select id="findbyorderid" parameterType="int" resultMap="OProductRs">
+	    select * from oproduct where orderid=#{id}
+	</select>
+</mapper> 

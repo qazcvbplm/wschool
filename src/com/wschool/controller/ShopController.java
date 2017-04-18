@@ -1,0 +1,192 @@
+package com.wschool.controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.google.gson.JsonObject;
+import com.wschool.Dao.ShopDao;
+import com.wschool.entity.Shop;
+import com.wschool.service.ShopServiceDao;
+import com.wschool.util.AjaxUtil;
+import com.wschool.util.Result;
+
+@Controller
+public class ShopController {
+	@Autowired
+	private ShopServiceDao shopServiceDao;
+	@Autowired
+	private ShopDao shopDao;
+	
+	@RequestMapping("/controller/shoplist")
+	public String shoplist(HttpServletRequest req,int sid)
+	{
+		List<Shop> slist=shopDao.findbyschool(sid);
+		req.getSession().setAttribute("schoolid", sid);
+		req.getSession().setAttribute("slist", slist);
+		return "redirect:shoplist.jsp";
+	}
+	
+	@RequestMapping("/controller/shoplistajax")
+	public void shoplistajax(HttpServletRequest req,HttpServletResponse rep)
+	{
+		List<Shop> slist=shopServiceDao.shoplist();
+		AjaxUtil.PrintArrayClass(rep, slist);
+	}
+	
+	@RequestMapping("controller/addshop")
+	public String addshop(Shop shop,HttpServletRequest req)
+	{
+		shop.setSid(Integer.parseInt(req.getSession().getAttribute("schoolid").toString()));
+		if(shopServiceDao.add(shop)==Result.SUCCESS)
+		return shoplist(req,shop.getSid());
+		else
+		return "redirect:404.jsp";
+	}
+	
+	@RequestMapping("controller/findshopbyid")
+	public String addshop(Integer id,HttpServletRequest req)
+	{
+		Shop s=shopServiceDao.findbyid(id);
+		req.getSession().setAttribute("shop", s);
+		return "redirect:editorshop.jsp";
+	}
+	
+	
+	@RequestMapping("controller/updateshop")
+	public String updateshop(Shop shop,String username,String password,HttpServletRequest req)
+	{
+		int sid=Integer.parseInt(req.getSession().getAttribute("schoolid").toString());
+		shopServiceDao.update(shop,username,password);
+		return shoplist(req,sid);
+	}
+	
+	@RequestMapping("controller/deleteshop")
+	public String deleteshop(@RequestParam(defaultValue="0") int id,HttpServletRequest req,int sid)
+	{
+		shopServiceDao.deleteshopbyid(id);
+		return shoplist(req,sid);
+	}
+	
+	
+	@RequestMapping("android/findshop")
+	public void findshop(int appid,HttpServletRequest req,HttpServletResponse rep)
+	{
+	    Shop s=	shopServiceDao.findmyshop(appid);
+	    AjaxUtil.PrintArrayClass(rep, s);
+	}
+	
+	@RequestMapping("wx/findshop")
+	public void wxfindshop(HttpServletRequest req,HttpServletResponse rep,Integer sid,String name)
+	{
+	    List<Shop> s=shopDao.findbyschool(sid);
+	    List<Shop> rs=new ArrayList<Shop>();
+	    for(int i=0;i<s.size();i++)
+	    {
+	    	if(s.get(i).getType()!=0)
+	    	{
+	    		if(s.get(i).getTypec().getName().equals(name))
+	    		{
+	    			Shop temp=s.get(i);
+	    			if(temp.getStatus().equals("1"))
+	    			{
+	    				SimpleDateFormat sf=new SimpleDateFormat("HH:mm");
+	    				String today=sf.format(new Date());
+	    				try {
+							Date now=sf.parse(today);
+							Date t1=sf.parse(temp.getTime1());
+							Date t2=sf.parse(temp.getTime2());
+							Date t3=sf.parse(temp.getTime3());
+							Date t4=sf.parse(temp.getTime4());
+							Date t5=sf.parse(temp.getTime5());
+							Date t6=sf.parse(temp.getTime6());
+							temp.setStatus("0");
+							if((now.after(t1)&&now.before(t2)))
+							{
+								temp.setStatus("1");
+							}else if((now.after(t3)&&now.before(t4)))
+							{
+								temp.setStatus("1");
+							}else if((now.after(t5)&&now.before(t6)))
+							{
+								temp.setStatus("1");
+							}
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+	    			}
+	    			rs.add(temp);
+	    		}
+	    	}
+	    }
+	    AjaxUtil.PrintArrayClass(rep, rs);
+	}
+	
+	@RequestMapping("wx/shopdetail")
+	public void wxfindshop(HttpServletRequest req,HttpServletResponse rep,int id)
+	{
+		Shop s=shopServiceDao.findbyid(id);
+		if(s.getName().equals("早餐预定")||s.getName().equals("快递代取"))
+		{
+			if(s.getStatus().equals("1"))
+			{
+				SimpleDateFormat sf=new SimpleDateFormat("HH:mm");
+				String today=sf.format(new Date());
+				try {
+					Date now=sf.parse(today);
+					Date t1=sf.parse(s.getTime1());
+					Date t2=sf.parse(s.getTime2());
+					Date t3=sf.parse(s.getTime3());
+					Date t4=sf.parse(s.getTime4());
+					Date t5=sf.parse(s.getTime5());
+					Date t6=sf.parse(s.getTime6());
+					s.setStatus("0");
+					if((now.after(t1)&&now.before(t2)))
+					{
+						s.setStatus("1");
+					}else if((now.after(t3)&&now.before(t4)))
+					{
+						s.setStatus("1");
+					}else if((now.after(t5)&&now.before(t6)))
+					{
+						s.setStatus("1");
+					}
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	    AjaxUtil.PrintArrayClass(rep, s);
+	}
+	
+	@RequestMapping("wx/findzk")
+	public void findzk(HttpServletRequest req,HttpServletResponse rep,int id)
+	{
+	    List<Shop> list=shopDao.findbyschool(id);
+	    int zcydid=0;
+	    int kddqid=0;
+	    for(int i=0;i<list.size();i++)
+	    {
+	    	if(list.get(i).getName().equals("早餐预定"))
+	    		zcydid=list.get(i).getId();
+	    	if(list.get(i).getName().equals("快递代取"))
+	    		kddqid=list.get(i).getId();
+	    }
+	    
+	    JsonObject json=new JsonObject();
+	    json.addProperty("zcyd", zcydid);
+	    json.addProperty("kddq", kddqid);
+	    AjaxUtil.PrintJson(rep, json);
+	}
+
+}

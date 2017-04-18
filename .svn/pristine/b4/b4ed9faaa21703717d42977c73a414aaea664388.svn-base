@@ -1,0 +1,151 @@
+package com.wschool.entity;
+
+import java.util.List;
+
+public class Orders {
+	private int id;
+	private String ordernumber;
+	private int addressid;
+	private Address address;
+	private double totalprice;
+	private String paystatus;
+	private String time;
+	private List<OProduct> ops;
+	private double sendprice;
+	private double boxprice;
+	private int shopid;
+	private Shop shop;
+	private String sendstatus;
+	private String paytime;
+	private int userid;
+	private User user;
+	private String addressdetail;
+	private String addressname;
+	private String addressphone;
+	private String bz;
+	
+	
+	public String getBz() {
+		return bz;
+	}
+	public void setBz(String bz) {
+		this.bz = bz;
+	}
+	public int getUserid() {
+		return userid;
+	}
+	public void setUserid(int userid) {
+		this.userid = userid;
+	}
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public String getAddressdetail() {
+		return addressdetail;
+	}
+	public void setAddressdetail(String addressdetail) {
+		this.addressdetail = addressdetail;
+	}
+	public String getAddressname() {
+		return addressname;
+	}
+	public void setAddressname(String addressname) {
+		this.addressname = addressname;
+	}
+	public String getAddressphone() {
+		return addressphone;
+	}
+	public void setAddressphone(String addressphone) {
+		this.addressphone = addressphone;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getOrdernumber() {
+		return ordernumber;
+	}
+	public void setOrdernumber(String ordernumber) {
+		this.ordernumber = ordernumber;
+	}
+	public int getAddressid() {
+		return addressid;
+	}
+	public void setAddressid(int addressid) {
+		this.addressid = addressid;
+	}
+	public double getTotalprice() {
+		return totalprice;
+	}
+	public void setTotalprice(double totalprice) {
+		this.totalprice = totalprice;
+	}
+	public String getPaystatus() {
+		return paystatus;
+	}
+	public void setPaystatus(String paystatus) {
+		this.paystatus = paystatus;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
+	}
+	public Address getAddress() {
+		return address;
+	}
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+	public List<OProduct> getOps() {
+		return ops;
+	}
+	public void setOps(List<OProduct> ops) {
+		this.ops = ops;
+	}
+	public double getSendprice() {
+		return sendprice;
+	}
+	public void setSendprice(double sendprice) {
+		this.sendprice = sendprice;
+	}
+	public double getBoxprice() {
+		return boxprice;
+	}
+	public void setBoxprice(double boxprice) {
+		this.boxprice = boxprice;
+	}
+	public int getShopid() {
+		return shopid;
+	}
+	public void setShopid(int shopid) {
+		this.shopid = shopid;
+	}
+	public Shop getShop() {
+		return shop;
+	}
+	public void setShop(Shop shop) {
+		this.shop = shop;
+	}
+	public String getSendstatus() {
+		return sendstatus;
+	}
+	public void setSendstatus(String sendstatus) {
+		this.sendstatus = sendstatus;
+	}
+	public String getPaytime() {
+		return paytime;
+	}
+	public void setPaytime(String paytime) {
+		this.paytime = paytime;
+	}
+	
+	
+
+}

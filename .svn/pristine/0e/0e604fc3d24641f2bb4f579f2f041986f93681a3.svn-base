@@ -1,0 +1,253 @@
+package com.wschool.controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.wschool.Dao.OrdersDao;
+import com.wschool.Dao.UserDao;
+import com.wschool.entity.OProduct;
+import com.wschool.entity.Orders;
+import com.wschool.entity.User;
+import com.wschool.service.OrderServiceDao;
+import com.wschool.util.AjaxUtil;
+import com.wschool.util.Result;
+import com.wschool.util.Util;
+import com.wschool.wxpay.WXpayUtil;
+
+@Controller
+public class OrdersController {
+	
+	@Autowired
+	private OrderServiceDao orderServiceDao;
+	@Autowired
+	private OrdersDao ordersDao;
+	@Autowired
+	private UserDao userDao;
+	@RequestMapping("/controller/findordersall")
+	public String adminsearch(HttpServletRequest req)
+	{
+		req.setAttribute("orderlist", orderServiceDao.adminsearch());
+		return "/controller/orderlist";
+	}
+	
+	@RequestMapping("/controller/findorderbyid")
+	public String adminsearch(HttpServletRequest req,int id)
+	{
+		req.setAttribute("order", orderServiceDao.findone(id));
+		return "/controller/orderdetail";
+	}
+	
+	
+	@RequestMapping("/controller/adminindex")
+	public void adminindex(HttpServletRequest req,String st,String et,HttpServletResponse rep,int shopid)
+	{
+		double psf = 0;
+		double xse = 0;
+		List<Orders> list=orderServiceDao.findbytime(st, et,shopid);
+		JsonObject rs=new JsonObject();
+		for(int i=0;i<list.size();i++)
+		{
+			Orders o=list.get(i);
+			psf+=o.getSendprice();
+			xse+=o.getTotalprice();
+		}
+		rs.addProperty("ddzs", list.size());
+		rs.addProperty("psf", psf);
+		rs.addProperty("xse", xse);
+		
+		//**********************
+		Gson gson=new Gson();
+		JsonArray orders=gson.fromJson(gson.toJson(list), JsonArray.class);
+		rs.add("orders", orders);
+		//******************
+		SimpleDateFormat sd=new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sd2=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		try {
+			long stime=sd.parse(st).getTime();
+			long etime=sd.parse(et).getTime();
+			int timec=(int) ((etime-stime)/(1000 * 60 * 60 * 24));
+			JsonArray array=new JsonArray();
+			for(int i=0;i<timec;i++)
+			{
+				
+				JsonObject json=new JsonObject();
+				long tempstime=stime+i*(1000 * 60 * 60 * 24);
+				int count=0;
+				for(int j=0;j<list.size();j++)
+				{
+					long temptime=sd2.parse(list.get(j).getPaytime()).getTime();
+					if(temptime>tempstime&&temptime<(tempstime+(1000 * 60 * 60 * 24)+1))
+					{
+						count++;
+					}
+				}
+				String name=sd.format(tempstime).substring(6);
+				json.addProperty("name",name);
+				json.addProperty("value", count);
+				json.addProperty("color", "#"+Util.getRandColorCode());
+				array.add(json);
+			}
+			rs.add("data", array);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		//************************
+		AjaxUtil.PrintJson(rep, rs);
+	}
+	
+	
+	
+	@RequestMapping("/android/findorder")
+	public void findshoporder(HttpServletRequest req,int id,HttpServletResponse rep)
+	{
+		List<Orders> olist=orderServiceDao.findbyshop(id);
+		AjaxUtil.PrintArrayClass(rep, olist);
+	}
+	
+	@RequestMapping("/android/findorderbystatus")
+	public void findorderbystatus(HttpServletRequest req,int status,int shopid,HttpServletResponse rep)
+	{
+		Orders o=new Orders();
+		o.setPaystatus(status+"");
+		o.setShopid(shopid);
+		List<Orders> olist=orderServiceDao.findbystatus(o);
+		AjaxUtil.PrintArrayClass(rep, olist);
+	}
+	
+	@RequestMapping("/android/updateorderstatus")
+	public void updateorderstatus(HttpServletRequest req,int id,int type,HttpServletResponse rep)
+	{
+		int rs=orderServiceDao.update(id, type);
+		if(rs==Result.SUCCESS)
+			AjaxUtil.Print(rep,Result.SUCCESS);
+		else
+			AjaxUtil.Print(rep, Result.ERROR);
+	}
+	
+	@RequestMapping("/wx/order")
+	public void updateorderstatus(HttpServletRequest req,HttpServletResponse rep,String ids,String counts,Orders o)
+	{
+		if(orderServiceDao.order(ids,counts,o)==Result.SUCCESS)
+		{
+			AjaxUtil.PrintResult(rep, o.getId());
+		}
+		
+	}
+	
+	@RequestMapping("/wx/myorder")
+	public void myorder(HttpServletRequest req,HttpServletResponse rep,int id)
+	{
+	 	      List<Orders> rs= ordersDao.findbyuserid(id);
+	 	      for(int i=0;i<rs.size();i++)
+	 	      {
+	 	    	  int s=Integer.parseInt(rs.get(i).getPaystatus());
+	 	    	  switch (s) {
+				case 0:
+					rs.get(i).setPaystatus("待付款");
+					break;
+				case 1:
+					rs.get(i).setPaystatus("待接收");
+					break;
+				case 2:
+					rs.get(i).setPaystatus("配送中");
+					break;
+				case 3:
+					rs.get(i).setPaystatus("待确认");
+					break;
+				case 4:
+					rs.get(i).setPaystatus("完成");
+					break;
+				}
+	 	      }
+	 	     for(int i=0;i<rs.size();i++)
+	 	      {
+	 	    	 String content="";
+	 	    	   List<OProduct> temp=  rs.get(i).getOps();
+	 	    	   for(int j=0;j<temp.size();j++)
+	 	    	   {
+	 	    		   content+=temp.get(j).getProduct().getName()+""+temp.get(j).getCount()+"份,";
+	 	    	   }
+	 	    	   rs.get(i).setSendstatus(content);
+	 	      }
+	 	      AjaxUtil.PrintArrayClass(rep, rs);
+	}
+	
+	@RequestMapping("/wx/orderdetail")
+	public void orderdetail(HttpServletRequest req,HttpServletResponse rep,int id)
+	{
+	 	      Orders rs= ordersDao.findbyid(id);
+	 	    	  int s=Integer.parseInt(rs.getPaystatus());
+	 	    	  switch (s) {
+				case 0:
+					rs.setPaystatus("待付款");
+					break;
+				case 1:
+					rs.setPaystatus("待接手");
+					break;
+				case 2:
+					rs.setPaystatus("配送中");
+					break;
+				case 3:
+					rs.setPaystatus("待确认");
+					break;
+				case 4:
+					rs.setPaystatus("完成");
+					break;
+				}
+	 	      AjaxUtil.PrintArrayClass(rep, rs);
+	}
+	
+	@RequestMapping("/wx/pay")
+	public void pay(HttpServletRequest req,HttpServletResponse rep,int id,int userid)
+	{
+	 	      Orders rs= ordersDao.findbyid(id);
+	 	      User u=userDao.findbyid(userid);
+	 	      int total=(int) (rs.getTotalprice()*100); 
+	 	      String r=WXpayUtil.payrequest("微校园-w", rs.getOrdernumber(),"1", u.getOpenid());
+	 	      AjaxUtil.PrintString(rep, r);
+	}
+	
+	@RequestMapping("/wx/paysuccess")
+	public void paysuccess(HttpServletRequest req,HttpServletResponse rep,int id)
+	{
+	 	     Orders o=new Orders();
+	 	     o.setId(id);
+	 	     o.setPaystatus(Result.ORDER_DJS+"");
+	 	     o.setPaytime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
+	 	     try {
+				ordersDao.updatestatus(o);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	 	   AjaxUtil.PrintResultS(rep, id+"");
+	}
+	
+	@RequestMapping("/wx/kddq")
+	public void kddq(HttpServletRequest req,HttpServletResponse rep,Orders o,String guige,String kuaidi)
+	{
+		String bz="";
+		bz+=o.getBz()+"*";
+		bz+=guige+"*";
+		bz+=kuaidi+"*";
+		o.setBz(bz);
+		o.setOrdernumber("ws"+new SimpleDateFormat("yyyyMMddhhmmss").format(new Date()));
+		o.setPaystatus(Result.ERROR+"");
+		if(ordersDao.add(o)==Result.SUCCESS)
+		{
+			AjaxUtil.Print(rep, o.getId());
+		}
+	}
+
+}

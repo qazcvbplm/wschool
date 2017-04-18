@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.AddressDao">
+	 <resultMap type="Address" id="AddressRs">
+         <result property="id" column="id"/>
+         <result property="name" column="name"/>
+          <result property="phone" column="phone"/>
+           <result property="detail" column="detail"/>
+            <result property="userid" column="userid"/>
+           <association property="user" column="userid" select="com.wschool.Dao.UserDao.findbyid"></association>
+	</resultMap>
+    
+	<insert id="add" useGeneratedKeys="true"  parameterType="Address" keyProperty="id" >
+		insert into address (name,phone,detail,userid) values(#{name},#{phone},#{detail},#{userid})
+	</insert>
+	
+	<select id="findbyid" parameterType="int"  resultMap="AddressRs">
+	    select * from address where id=#{id}
+	</select>
+	
+		<select id="findbyuid" parameterType="int"  resultMap="AddressRs">
+	    select * from address where userid=#{uid}
+	</select>
+	
+
+</mapper> 

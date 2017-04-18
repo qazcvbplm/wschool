@@ -1,0 +1,41 @@
+package com.wschool.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.wschool.Dao.AddressDao;
+import com.wschool.entity.Address;
+import com.wschool.util.AjaxUtil;
+
+@Controller
+public class AddressController {
+	
+	@Autowired
+	private AddressDao addressDao;
+	
+	@RequestMapping("wx/addressadd")
+	public void  add(HttpServletResponse rep,Address a)
+	{
+		int i=addressDao.add(a);
+		AjaxUtil.PrintResult(rep, a.getId());
+	}
+	
+	@RequestMapping("wx/myaddress")
+	public void  myaddress(HttpServletResponse rep,int id)
+	{
+		List<Address> rs=addressDao.findbyuid(id);
+		AjaxUtil.PrintArrayClass(rep, rs);
+	}
+	
+	@RequestMapping("wx/addressde")
+	public void  addressde(HttpServletResponse rep,int id)
+	{
+		addressDao.delete(id);
+	}
+
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.OrdersDao">
+	 <resultMap type="Orders" id="OrdersRs">
+         <result property="id" column="id"/>
+         <result property="ordernumber" column="ordernumber"/>
+          <result property="addressid" column="addressid"/>
+            <result property="totalprice" column="totalprice"/>
+            <result property="paystatus" column="paystatus"/>
+             <result property="sendprice" column="sendprice"/>
+              <result property="boxprice" column="boxprice"/>
+               <result property="sendstatus" column="sendstatus"/>
+               <result property="shopid" column="shopid"/>
+               <result property="addressdetail" column="addressdetail"/>
+               <result property="addressname" column="addressname"/>
+               <result property="userid" column="userid"/>
+               <result property="addressphone" column="addressphone"/>
+                 <result property="paytime" column="paytime"/>
+                   <result property="bz" column="bz"/>
+           <association property="address" column="addressid" select="com.wschool.Dao.AddressDao.findbyid"></association>
+            <association property="shop" column="shopid" select="com.wschool.Dao.ShopDao.findbyid"></association>
+           <collection property="ops" column="id" select="com.wschool.Dao.OProductDao.findbyorderid"></collection>
+	</resultMap>
+    
+	<insert id="add" useGeneratedKeys="true"  parameterType="Orders" keyProperty="id" >
+		insert into orders (ordernumber,addressid,totalprice,paystatus,sendprice,boxprice,userid,addressname,addressphone,addressdetail,shopid,bz) 
+		values(#{ordernumber},#{addressid},#{totalprice},#{paystatus},#{sendprice},#{boxprice},#{userid},#{addressname},#{addressphone},#{addressdetail},#{shopid},#{bz})
+	</insert>
+	
+	<select id="findall" resultMap="OrdersRs">
+	    select * from orders
+	</select>
+	
+	<select id="findbyid" resultMap="OrdersRs" parameterType="int">
+	    select * from orders where id=#{id}
+	</select>
+	
+	<select id="findbytime" resultMap="OrdersRs" parameterType="map">
+	    select * from orders where paytime between #{st} and #{et} and shopid=#{shopid} and paystatus!=0
+	    
+	</select>
+	
+	<select id="findbyshopid" parameterType="Integer" resultMap="OrdersRs">
+	    select * from orders where shopid=#{id}
+	</select> 
+	
+		<select id="findbyuserid" parameterType="Integer" resultMap="OrdersRs">
+	    select * from orders where userid=#{id}
+	</select> 
+	
+	<select id="findbystatus" parameterType="Orders" resultMap="OrdersRs">
+	    select * from orders where shopid=#{shopid} and paystatus=#{paystatus}
+	</select> 
+	
+	<update id="updatestatus" parameterType="Orders" >
+	    update orders
+	    <set>
+         <if test="paytime!=null">
+          paytime=#{paytime},
+         </if>	        
+	      paystatus=#{paystatus}
+	    </set>
+	    where
+	    id=#{id}
+	</update>
+
+</mapper> 

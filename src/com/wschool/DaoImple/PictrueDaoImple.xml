@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.PictrueDao">
+	 <resultMap type="Pictrue" id="PictrueRs">
+         <result property="id" column="id"/>
+         <result property="url" column="url"/>
+        <!--  <association  property="students" column="id"  select="com.Dao.StudentDao.findbyteacher"></association> -->
+	</resultMap>
+    
+	<insert id="add" parameterType="Pictrue" useGeneratedKeys="true"  keyProperty="id" >
+	insert into pictrue (url) value(#{url})
+	</insert>
+	
+	<select id="findall" resultMap="PictrueRs">
+	    select * from pictrue
+	</select> 
+	
+	<select id="findbyid" resultMap="PictrueRs">
+	    select * from pictrue where id=#{id}
+	</select> 
+
+	
+	<delete id="delete" parameterType="int">
+	    delete from pictrue where id=#{id}
+	</delete>
+</mapper> 

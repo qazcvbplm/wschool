@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.ShopDao">
+	 <resultMap type="Shop" id="ShopRs">
+         <result property="id" column="id"/>
+         <result property="name" column="name"/>
+          <result property="type" column="type" />
+         <result property="code" column="code" />
+         <result property="image" column="image"/>
+         <result property="appid" column="appid"/>
+         <result property="status" column="status" />
+         <result property="phone" column="phone" />
+         <result property="startprice" column="startprice" />
+         <result property="boxprice" column="boxprice" />
+         <result property="sendtype" column="sendtype" />
+           <result property="time1" column="time1" />
+              <result property="time2" column="time2" />
+                 <result property="time3" column="time3" />
+                    <result property="time4" column="time4" />
+                       <result property="time5" column="time5" />
+                          <result property="time6" column="time6" />
+                            <result property="sid" column="sid" />
+        <association  property="typec" column="type"  select="com.wschool.Dao.ClassesDao.findbyid"></association> 
+         <association  property="imagec" column="image"  select="com.wschool.Dao.PictrueDao.findbyid"></association>
+         <association  property="appidc" column="appid"  select="com.wschool.Dao.UserDao.findbyid"></association>
+         <collection property="myclasses" column="id" select="com.wschool.Dao.ClassesDao.findbyshopid"></collection> 
+	</resultMap>
+    
+	<insert id="add" parameterType="Shop"  >
+	    insert into shop (name,code,type,phone,status,sid) value(#{name},#{code},#{type},#{phone},#{status},#{sid})
+	</insert>
+	
+	<select id="findall" resultMap="ShopRs">
+	    select * from shop
+	</select> 
+	
+	<select id="findbyid" parameterType="Integer" resultMap="ShopRs">
+	    select * from shop where id=#{id}
+	</select> 
+	
+	<select id="findbyschool" parameterType="Integer" resultMap="ShopRs">
+	    select * from shop where sid=#{sid}
+	</select> 
+	
+	<select id="findbyappid" parameterType="Integer" resultMap="ShopRs">
+	    select * from shop where appid=#{id}
+	</select> 
+	
+	<select id="delete" parameterType="Integer" >
+	   delete from shop where id=#{id}
+	</select> 
+	
+	
+	
+	<update id="update" parameterType="Shop">
+	    update shop
+	    <trim prefix="set" suffixOverrides=",">
+          <if test="name!=null">
+              name=#{name}, 
+          </if>
+            <if test="code!=null">
+               code=#{code},
+          </if>	 
+            <if test="phone!=null">
+              phone=#{phone},
+          </if>	 
+            <if test="status!=null">
+              status=#{status},
+          </if>	 
+            <if test="type!=null">
+              type=#{type},
+          </if>	 
+            <if test="image!=null">
+              image=#{image},
+          </if>	 
+            <if test="time1!=null and time2!=null">
+              time1=#{time1},time2=#{time2},
+          </if>	 
+           <if test="time3!=null and time4!=null">
+              time3=#{time3},time4=#{time4},
+          </if>	 
+           <if test="time5!=null and time6!=null">
+              time5=#{time5},time6=#{time6},
+          </if>	  
+            <if test="arrivetime!=null">
+              arrivetime=#{arrivetime},
+          </if>	 
+            <if test="startprice!=null">
+              startprice=#{startprice},
+          </if>	 
+          <if test="boxprice!=null">
+              boxprice=#{boxprice},
+          </if>	 
+           <if test="sendtype!=null">
+              sendtype=#{sendtype},
+          </if>	
+          <if test="appid!=null">
+              appid=#{appid},
+          </if>	        
+	    </trim>
+	    where id=#{id}
+	</update>
+
+</mapper> 
