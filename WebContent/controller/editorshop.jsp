@@ -216,6 +216,11 @@ border: 3px solid #ccc;
 			                      <input class="form-control" type="number" name="boxprice" value="${shop.boxprice}" />
 			                      <div class="input-group-addon">元</div>
 			                      </div>
+			                        <label  class="control-label col-md-1">配送费</label>
+			                      <div class="col-md-2 input-group">
+			                      <input class="form-control" type="number" name="psf" value="${shop.psf}" />
+			                      <div class="input-group-addon">元</div>
+			                      </div>
 			                    </div>
 			                  <!--   <div class="form-group ">
 			                      <label  class="control-label col-md-1">配送方式一</label>
@@ -240,14 +245,15 @@ border: 3px solid #ccc;
 			                      <div class="row text-center" >
 			                        <div class="col-md-12">
 			                          <a class="btn btn-success" onclick="selectimage()">选择图片</a>
-			                          <a class="btn btn-success">上传图片</a>
+			                          <input type="file" id="filei" name="pic" style="display:none" >
+			                          <a class="btn btn-success" onclick="upimage()">上传图片</a>
 				                     </div>
 			                      </div>
 			                      <h1></h1>
-			                        <div class="row text-center">
+			                        <div  class="row text-center">
 					                     <div  class="col-md-12" >
 					                                <input type="hidden" name="image" value="${shop.image}" />
-						                            <img  width="300px" height="300px" alt="图片预览" id="imageyl" src="${shop.imagec.url}" >
+						                            <img id="show"  width="300px" height="300px" alt="图片预览"  src="${shop.imagec.url}" >
 						                </div>
 					                </div>
 			                   </div>
@@ -316,10 +322,19 @@ border: 3px solid #ccc;
     <script type="text/javascript" src="assets/data-tables/DT_bootstrap.js"></script>
     <script src="js/common-scripts.js"></script>
     <script src="js/dynamic-table.js"></script>
-
+  <script src="js/tzh.js"></script>
 <script>
 				var checkid;
 				var shopid;
+				function upimage(){
+					var filei=$("input[type='file']");
+					$T.previewI({
+						file:'filei',
+						show:'show'
+					})
+					filei.click();
+					
+				}
 	function selectimage()
 	{
 		$.ajax({
@@ -343,11 +358,12 @@ border: 3px solid #ccc;
 	function sureselect(id)
 	{
 		$("#mt").modal("hide");
+		$("input[type='file']").val("");
 		$.ajax({
 			url:'findimagebyidajax.do?id='+id,
 					dataType:'json',
 					success:function(data){
-						 $("#imageyl").attr("src",data.result);
+						 $("#show").attr("src",data.result);
 						 $("input[name='image']").attr("value",id);
 					}
 		})

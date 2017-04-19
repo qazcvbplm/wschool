@@ -17,6 +17,7 @@ public class Shop implements Serializable{
 	private String arrivetime="0";//到达时间
 	private String startprice="0";//起送价格
 	private String boxprice="0";//餐盒费
+	private String psf="0";
 	private String sendtype;//配送方式
 	private int appid;//appid
 	private User appidc;//app对象
@@ -28,6 +29,12 @@ public class Shop implements Serializable{
 	private String time6;
 	private int sid;
 	
+	public String getPsf() {
+		return psf;
+	}
+	public void setPsf(String psf) {
+		this.psf = psf;
+	}
 	public int getSid() {
 		return sid;
 	}

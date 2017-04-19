@@ -13,12 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.google.gson.JsonObject;
+import com.wschool.Dao.PictrueDao;
 import com.wschool.Dao.ShopDao;
+import com.wschool.entity.Pictrue;
 import com.wschool.entity.Shop;
 import com.wschool.service.ShopServiceDao;
 import com.wschool.util.AjaxUtil;
+import com.wschool.util.FileUp;
 import com.wschool.util.Result;
 
 @Controller
@@ -27,6 +31,8 @@ public class ShopController {
 	private ShopServiceDao shopServiceDao;
 	@Autowired
 	private ShopDao shopDao;
+	@Autowired
+	private PictrueDao pictrueDao;
 	
 	@RequestMapping("/controller/shoplist")
 	public String shoplist(HttpServletRequest req,int sid)
@@ -64,8 +70,19 @@ public class ShopController {
 	
 	
 	@RequestMapping("controller/updateshop")
-	public String updateshop(Shop shop,String username,String password,HttpServletRequest req)
+	public String updateshop(Shop shop,String username,String password,HttpServletRequest req,@RequestParam(required=false)MultipartFile pic)
 	{
+		Pictrue p=new Pictrue();
+		if(pic!=null)
+		{
+			if(!pic.isEmpty())
+			{
+				String rs=FileUp.UpFile(pic, req, "upload");
+				p.setUrl(rs);
+				pictrueDao.add(p);
+				shop.setImage(p.getId());
+			}
+		}
 		int sid=Integer.parseInt(req.getSession().getAttribute("schoolid").toString());
 		shopServiceDao.update(shop,username,password);
 		return shoplist(req,sid);

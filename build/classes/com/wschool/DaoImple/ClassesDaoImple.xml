@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wschool.Dao.ClassesDao">
+	 <resultMap type="Classes" id="ClassesRs">
+         <result property="id" column="id"/>
+         <result property="name" column="name"/>
+            <result property="shopid" column="shopid"/>
+            <collection property="ps" column="id" select="com.wschool.Dao.ProductDao.findbyclassid"></collection>
+	</resultMap>
+    
+	<insert id="add" useGeneratedKeys="true"  parameterType="Classes" keyProperty="id" >
+		insert into classes (name,shopid) values(#{name},#{shopid})
+	</insert>
+	
+	<select id="findbyshopid" parameterType="Integer" resultMap="ClassesRs" >
+	    select * from classes where shopid=#{shopid}
+	</select> 
+	
+	<select id="findbyid" parameterType="Integer" resultMap="ClassesRs" >
+	    select * from classes where id=#{id}  and shopid=0
+	</select> 
+	
+	<select id="findbyidc" parameterType="Integer" resultMap="ClassesRs" >
+	    select * from classes where id=#{id}
+	</select> 
+	
+	<delete id="delete" parameterType="int">
+	    delete from classes where id=#{id}
+	</delete>
+
+</mapper> 
