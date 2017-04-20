@@ -74,8 +74,8 @@
                           <tr class="odd gradeX">
                               <td><input type="checkbox" class="checkboxes" value="1" /></td>
                               <td>${o.ordernumber}</td>
-                              <td class="hidden-phone">${o.address.detail}</td>
-                               <th class="hidden-phone">${o.address.user.username}</th>
+                              <td class="hidden-phone">${o.addressdetail}</td>
+                               <th class="hidden-phone">${o.addressname}</th>
                                <td class="hidden-phone">${o.totalprice}</td>
                                <c:if test="${o.paystatus==1 }">
                               <td class="hidden-phone" style="color:#00ff00">待接单</td>

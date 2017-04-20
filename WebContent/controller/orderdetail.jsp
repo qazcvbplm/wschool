@@ -69,19 +69,19 @@
 	               <div class="row" >
 	                  <div class="col-md-12" >
 	                     <label class="col-md-3">收货人姓名</label>
-	                     <label class="col-md-3">${order.address.name}</label>
+	                     <label class="col-md-3">${order.addressname}</label>
 	                  </div>
 	              </div>
 	              <div class="row" >
 	                  <div class="col-md-12" >
 	                     <label class="col-md-3">详细地址</label>
-	                     <label class="col-md-3">${order.address.detail}</label>
+	                     <label class="col-md-3">${order.addressdetail}</label>
 	                  </div>
 	              </div>
 	               <div class="row" >
 	                  <div class="col-md-12" >
 	                     <label class="col-md-3">联系电话</label>
-	                     <label class="col-md-3">${order.address.phone}</label>
+	                     <label class="col-md-3">${order.addressphone}</label>
 	                  </div>
 	              </div>
               </div>
