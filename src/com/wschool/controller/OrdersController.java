@@ -3,7 +3,9 @@ package com.wschool.controller;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,9 +41,14 @@ public class OrdersController {
 	@Autowired
 	private ProductDao productDao;
 	@RequestMapping("/controller/findordersall")
-	public String adminsearch(HttpServletRequest req)
+	public String adminsearch(HttpServletRequest req,String starttime,String endtime,int shopid,int type)
 	{
-		req.setAttribute("orderlist", orderServiceDao.adminsearch());
+		Map<String,String> map=new HashMap<String, String>();
+		map.put("st", starttime);
+		map.put("et", endtime);
+		map.put("shopid", shopid+"");
+		map.put("type", type+"");
+		req.getSession().setAttribute("orderlist", ordersDao.findbyadmin(map));
 		return "/controller/orderlist";
 	}
 	
@@ -297,7 +304,16 @@ public class OrdersController {
 		o.setId(id);
 		o.setPaystatus(Result.ORDER_CG+"");
 		ordersDao.updatestatus(o);
-		return adminsearch(req);
+		List<Orders> list=(List<Orders>) req.getSession().getAttribute("orderlist");
+		for(int i=0;i<list.size();i++)
+		{
+			if(list.get(i).getId()==id)
+			{
+				o.setPaystatus(Result.ORDER_CG+"");
+				break;
+			}
+		}
+		return "redirect:orderlist.jsp";
 	}
 	
 	@RequestMapping("/wx/tk")

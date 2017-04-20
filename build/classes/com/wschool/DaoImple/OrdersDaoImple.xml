@@ -43,6 +43,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	     order by time desc
 	</select>
 	
+	<select id="findbyadmin" resultMap="OrdersRs" parameterType="map">
+	    select * from orders where time between #{st} and #{et} and paystatus=#{type} and shopid=#{shopid}
+	     order by time desc
+	</select>
+	
 	<select id="findbyshopid" parameterType="Integer" resultMap="OrdersRs">
 	    select * from orders where shopid=#{id} order by time desc
 	</select> 

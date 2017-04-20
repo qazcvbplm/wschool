@@ -13,5 +13,6 @@ public interface OrdersDao {
     public List<Orders> findbyshopid(int id);
     public List<Orders> findbyuserid(int id);
     public List<Orders> findbystatus(Orders o);
+    public List<Orders> findbyadmin(Map<String,String> map);
     public int updatestatus(Orders o);
 }

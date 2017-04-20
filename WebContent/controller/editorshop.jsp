@@ -208,17 +208,17 @@ border: 3px solid #ccc;
 			                     <div class="form-group">
 			                      <label  class="control-label col-md-1">起送价</label>
 			                      <div class="col-md-2 input-group">
-			                      <input class="form-control" type="number" name="startprice"  value="${shop.startprice}" />
+			                      <input class="form-control" type="number" name="startprice" step="0.01"  value="${shop.startprice}" />
 			                      <div class="input-group-addon">元</div>
 			                      </div>
 			                        <label  class="control-label col-md-1">餐盒费</label>
 			                      <div class="col-md-2 input-group">
-			                      <input class="form-control" type="number" name="boxprice" value="${shop.boxprice}" />
+			                      <input class="form-control" type="number" name="boxprice" step="0.01" value="${shop.boxprice}" />
 			                      <div class="input-group-addon">元</div>
 			                      </div>
 			                        <label  class="control-label col-md-1">配送费</label>
 			                      <div class="col-md-2 input-group">
-			                      <input class="form-control" type="number" name="psf" value="${shop.psf}" />
+			                      <input class="form-control" type="number" name="psf" step="0.01" value="${shop.psf}" />
 			                      <div class="input-group-addon">元</div>
 			                      </div>
 			                    </div>
