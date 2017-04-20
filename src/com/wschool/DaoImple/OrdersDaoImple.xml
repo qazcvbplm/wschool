@@ -39,7 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="findbytime" resultMap="OrdersRs" parameterType="map">
-	    select * from orders where paytime between #{st} and #{et} and shopid=#{shopid} and paystatus!=0
+	    select * from orders where paytime between #{st} and #{et} and shopid=#{shopid} and (paystatus!=0 and paystatus!=1)
 	     order by time desc
 	</select>
 	
